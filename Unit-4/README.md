@@ -1,189 +1,247 @@
 # Enterprise Smart Library Management Platform
-## Unit 4: Infrastructure Automation Mini-Project
+## Unit 4 – Infrastructure Automation Mini Project
 
-### Student & Project Credentials
-* **Student Name:** Bhagwat Dhonde
-* **PRN:** 2125UMLM1015
-* **Module:** Unit 4: Infrastructure Automation
-* **Curriculum Series:** CAREERTIQ | Cloud DevOps Engineering Series
-* **Target Environment:** AWS Cloud (`us-east-1`), Ubuntu 22.04 LTS / macOS / WSL2
+### Student Information
+
+| Detail | Information |
+|---|---|
+| Student Name | DHOKANE KRUSHNA BABASAHEB |
+| PRN | 2125UMLM1079 |
+| Module | Unit 4 – Infrastructure Automation |
+| Project | Enterprise Smart Library Management Platform |
+| Cloud Platform | Amazon Web Services (AWS) |
 
 ---
 
 ## 1. Project Overview
 
-The **Enterprise Smart Library Management Platform** provides an end-to-end, automated, infrastructure-as-code and configuration management pipeline. The solution provisions cloud networking, compute, security, container runtime, reverse proxying, and automated disaster recovery backups.
+The Enterprise Smart Library Management Platform is a DevOps-based project that demonstrates how cloud infrastructure and server configuration can be automated using Terraform and Ansible.
 
-```mermaid
-flowchart LR
-    A["DevOps Workstation\n(AWS CLI, Terraform, Ansible)"] -->|1. terraform apply| B["AWS Cloud Fabric\n(VPC, Subnet, IGW, SG, EC2, S3)"]
-    A -->|2. ansible-playbook| C["EC2 Host Configuration\n(Docker, Nginx Reverse Proxy)"]
-    C -->|3. Container Run| D["Smart Library App\n(Flask API + SQLite)"]
-    D -->|4. Automated Backup| E["AWS S3 Bucket\n(AES256 + Versioning)"]
-```
+The main objective of this project is to reduce manual work by automating infrastructure creation, server configuration, application deployment, and database backups.
 
----
+Terraform is used to create AWS resources, while Ansible is used to configure the EC2 instance and deploy the application using Docker.
 
-## 2. Directory Structure
+## 2. Technologies Used
+
+- **AWS:** Cloud infrastructure platform.
+- **Terraform:** Infrastructure as Code (IaC).
+- **Ansible:** Configuration management and automation.
+- **Docker:** Application containerization.
+- **Nginx:** Web server and reverse proxy.
+- **Python Flask:** Backend application framework.
+- **SQLite:** Database management.
+- **Amazon S3:** Database backup storage.
+- **Ubuntu:** Server operating system.
+
+## 3. Project Architecture
+
+The project follows an automated deployment workflow:
+
+1. Terraform provisions AWS infrastructure.
+2. AWS EC2 provides the virtual server.
+3. Ansible connects to EC2 through SSH.
+4. Ansible installs Docker and Nginx.
+5. Docker deploys the Flask-based Library Management application.
+6. Nginx works as a reverse proxy.
+7. Database backups are stored in Amazon S3.
+
+## 4. Project Directory Structure
 
 ```text
-mini-project-unit-4-Devo/
-├── library-terraform/              # HashiCorp Terraform IaC Suite
-│   ├── main.tf                     # Core AWS resources (VPC, Subnet, IGW, SG, EC2, S3)
-│   ├── variables.tf                # Configurable input parameters
-│   ├── outputs.tf                  # Infrastructure outputs (IPs, ARNs, DNS)
-│   ├── providers.tf                # AWS provider (~> 5.0) definition
-│   ├── terraform.tfvars            # Production variable definitions
-│   └── backend.tf                  # S3 state backend configuration
+Unit-4/
 │
-├── library-ansible/                # Ansible Core Configuration Management
-│   ├── ansible.cfg                 # Ansible runtime and SSH connection settings
-│   ├── inventory.ini               # Target EC2 instance inventory
-│   ├── inventory.ini.example       # Example inventory template
-│   ├── site.yml                    # Master playbook (Configure Smart Library Server)
-│   └── roles/                      # Modular Ansible Roles (20 Tasks Total)
-│       ├── common/                 # Baseline packages and UFW firewall rules
-│       ├── docker/                 # Docker engine installation and enablement
-│       ├── nginx/                  # Nginx installation and reverse proxy config
-│       │   └── templates/
-│       │       └── library.conf.j2 # Nginx proxy configuration template
-│       └── library_app/            # Containerized Flask microservice deployment
-│           ├── tasks/main.yml      # Docker build, run, and health verification
-│           └── files/              # Application build artifacts
-│               ├── app.py
-│               ├── requirements.txt
-│               └── Dockerfile
+├── library-terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   ├── terraform.tfvars
+│   └── backend.tf
 │
-├── library-app/                    # Standalone Flask Application Source
-│   ├── app.py                      # Flask REST API with SQLite database
-│   ├── requirements.txt            # Python dependencies (Flask, Gunicorn)
-│   └── Dockerfile                  # Container definition
+├── library-ansible/
+│   ├── ansible.cfg
+│   ├── inventory.ini
+│   ├── inventory.ini.example
+│   ├── site.yml
+│   └── roles/
 │
-├── scripts/                        # Automated Deployment & Verification Scripts
-│   ├── setup_workstation.sh        # Chapter 2 workstation baseline setup
-│   ├── deploy_all.sh               # Complete end-to-end deployment orchestrator
-│   ├── test_endpoints.sh           # API endpoint verification script
-│   ├── backup_to_s3.sh             # SQLite database to S3 backup script
-│   ├── verify_backup.sh            # S3 encryption & versioning audit script
-│   └── test_api.py                 # Python integration test runner
+├── library-app/
+│   ├── app.py
+│   ├── requirements.txt
+│   └── Dockerfile
 │
-├── docs/                           # Documentation and Academic Deliverables
-│   ├── ARCHITECTURE.md             # Detailed architecture design & diagrams
-│   ├── LAB_MANUAL_WALKTHROUGH.md   # Step-by-step lab manual walkthrough
-│   └── PROJECT_REPORT_2125UMLM1015.md # Formal Academic Submission Report
+├── scripts/
+│   ├── setup_workstation.sh
+│   ├── deploy_all.sh
+│   ├── test_endpoints.sh
+│   ├── backup_to_s3.sh
+│   ├── verify_backup.sh
+│   └── test_api.py
 │
-└── README.md                       # Main Project Documentation
+├── docs/
+│   ├── ARCHITECTURE.md
+│   └── LAB_MANUAL_WALKTHROUGH.md
+│
+└── README.md
 ```
 
----
+## 5. Implementation Steps
 
-## 3. Quick Start & Execution Guide
+### Step 1: Workstation Setup
 
-### Step 1: Workstation Setup & Authentication (Chapter 2)
-Ensure required tools and SSH keys are established:
+Install and configure the required tools:
+
+- AWS CLI
+- Terraform
+- Ansible
+- Git
+- SSH
+
+Configure AWS credentials:
+
 ```bash
-# 1. Run automated setup script
-bash scripts/setup_workstation.sh
-
-# 2. Configure AWS programmatic credentials
 aws configure
+```
 
-# 3. Verify STS caller identity
+Verify AWS authentication:
+
+```bash
 aws sts get-caller-identity
 ```
 
-### Step 2: Provision Cloud Infrastructure (Chapter 3)
+### Step 2: Infrastructure Provisioning Using Terraform
+
+Navigate to the Terraform directory:
+
 ```bash
 cd library-terraform
-terraform init
-terraform validate
-terraform plan
-terraform apply -auto-approve
 ```
-*Note the output `instance_public_ip` and `s3_backup_bucket_name`.*
 
-### Step 3: Configure Server & Deploy Container (Chapter 4)
-Update `library-ansible/inventory.ini` with your instance IP:
+Initialize Terraform:
+
+```bash
+terraform init
+```
+
+Validate configuration:
+
+```bash
+terraform validate
+```
+
+Review infrastructure changes:
+
+```bash
+terraform plan
+```
+
+Create AWS infrastructure after reviewing the plan:
+
+```bash
+terraform apply
+```
+
+### Step 3: Server Configuration Using Ansible
+
+Update the Ansible inventory file with the EC2 public IP address.
+
+Example:
+
 ```ini
 [smart_library]
-<YOUR_EC2_PUBLIC_IP> ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/library-aws-key
+<YOUR_EC2_PUBLIC_IP> ansible_user=ubuntu
 ```
 
-Execute the Ansible Playbook:
+Check the playbook syntax:
+
 ```bash
-cd ../library-ansible
 ansible-playbook -i inventory.ini site.yml --syntax-check
+```
+
+Execute the playbook:
+
+```bash
 ansible-playbook -i inventory.ini site.yml
 ```
 
-### Step 4: Verify Endpoints (Chapter 5)
+### Step 4: Application Deployment
+
+Ansible automates the installation and configuration of:
+
+- Docker
+- Nginx
+- Flask application
+
+The Library Management application runs inside a Docker container.
+
+### Step 5: Application Verification
+
+Check the application endpoints:
+
 ```bash
-# 1. Root Status
 curl http://<YOUR_EC2_PUBLIC_IP>/
-# Response: {"application":"Smart Library Management Platform","status":"running"}
-
-# 2. Health Endpoint
-curl http://<YOUR_EC2_PUBLIC_IP>/api/health
-# Response: {"status":"healthy"}
-
-# 3. Books Catalog
-curl http://<YOUR_EC2_PUBLIC_IP>/api/books
-# Response: [{"author":"F. Scott Fitzgerald","id":1,"title":"The Great Gatsby"}]
 ```
 
-### Step 5: S3 Database Backup & Governance Check (Chapter 5)
+Check application health:
+
 ```bash
-# Verify S3 Bucket Versioning
-aws s3api get-bucket-versioning \
-  --bucket library-backup-<ACCOUNT_ID>-us-east-1 \
-  --region us-east-1
-
-# Verify S3 Server-Side Encryption
-aws s3api get-bucket-encryption \
-  --bucket library-backup-<ACCOUNT_ID>-us-east-1 \
-  --region us-east-1
-
-# List Backup Objects in S3
-aws s3 ls s3://library-backup-<ACCOUNT_ID>-us-east-1/backups/ \
-  --region us-east-1
+curl http://<YOUR_EC2_PUBLIC_IP>/api/health
 ```
 
+Check the books catalog:
+
+```bash
+curl http://<YOUR_EC2_PUBLIC_IP>/api/books
+```
+
+### Step 6: Database Backup Using Amazon S3
+
+The project uses Amazon S3 to store database backups.
+
+Check bucket versioning:
+
+```bash
+aws s3api get-bucket-versioning --bucket <YOUR_BUCKET_NAME>
+```
+
+Check bucket encryption:
+
+```bash
+aws s3api get-bucket-encryption --bucket <YOUR_BUCKET_NAME>
+```
+
+List backup files:
+
+```bash
+aws s3 ls s3://<YOUR_BUCKET_NAME>/backups/
+```
+
+## 6. Expected Learning Outcomes
+
+After completing this project, students will understand:
+
+1. Infrastructure as Code using Terraform.
+2. AWS resource provisioning and management.
+3. Server configuration using Ansible.
+4. Docker-based application deployment.
+5. Nginx reverse proxy configuration.
+6. Cloud database backup using Amazon S3.
+7. Automation of DevOps deployment workflows.
+
+## 7. Conclusion
+
+This project demonstrates how Terraform and Ansible can work together to automate cloud infrastructure and application deployment.
+
+Terraform manages the creation of AWS resources, while Ansible handles server configuration and application deployment.
+
+By integrating Docker, Nginx, and Amazon S3, the project provides practical experience with important DevOps and cloud computing concepts.
+
+The project helps develop practical knowledge of Infrastructure as Code, configuration management, cloud automation, and deployment workflows.
+
 ---
 
-## 4. Toolchain Verification Matrix
+**Project:** Enterprise Smart Library Management Platform
 
-| Tool Name | Verification Command | Expected Output | Status |
-| :--- | :--- | :--- | :--- |
-| **AWS CLI v2** | `aws --version` | `aws-cli/2.15.x` or higher | **VERIFIED** |
-| **AWS Auth** | `aws sts get-caller-identity` | Valid Account ID & IAM Principal ARN | **VERIFIED** |
-| **Terraform CLI**| `terraform -version` | `Terraform v1.7.x` or higher | **VERIFIED** |
-| **Ansible Core** | `ansible --version` | `ansible [core 2.16.x]` or higher | **VERIFIED** |
-| **SSH Key Pair** | `aws ec2 describe-key-pairs` | `library-aws-key` present in AWS | **VERIFIED** |
-| **API Health** | `curl http://<IP>/api/health` | `{"status":"healthy"}` | **VERIFIED** |
-| **S3 Versioning**| `aws s3api get-bucket-versioning`| `"Status": "Enabled"` | **VERIFIED** |
-| **S3 Encryption**| `aws s3api get-bucket-encryption`| `"SSEAlgorithm": "AES256"` | **VERIFIED** |
+**Module:** Unit 4 – Infrastructure Automation
 
----
-
-## 5. Troubleshooting Common Issues
-
-1. **`aws: command not found`:**
-   Add `/usr/local/bin` to your environment:
-   ```bash
-   export PATH=$PATH:/usr/local/bin >> ~/.bashrc && source ~/.bashrc
-   ```
-
-2. **`Permissions 0644 for private key are too open`:**
-   OpenSSH requires strict private key file permissions:
-   ```bash
-   chmod 400 ~/.ssh/library-aws-key
-   ```
-
-3. **`Terraform State Lock Timeout`:**
-   If a previous plan run was interrupted, force unlock using:
-   ```bash
-   terraform force-unlock <LOCK_ID>
-   ```
-
-4. **`Docker socket permission denied in Ansible`:**
-   Ensure the task runs with `become: true` or the user is part of the `docker` group.
+**Student:** DHOKANE KRUSHNA BABASAHEB
